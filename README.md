@@ -1,7 +1,7 @@
-# FinanceHub - Personal Finance Management Application
+# MoneyHub - Personal Money Management Application
 
-A comprehensive personal finance management web application built with **React frontend** and **Flask backend**.  
-FinanceHub helps users track their income, expenses, set savings goals, and gain insights into their financial health.
+A comprehensive personal money management web application built with **React frontend** and **Flask backend**.  
+MoneyHub helps users track their income, expenses, set savings goals, and gain insights into their financial health.
 
 ---
 
@@ -14,7 +14,7 @@ FinanceHub helps users track their income, expenses, set savings goals, and gain
 - Secure password validation (6+ characters)  
 
 ###  Dashboard
-- Financial Overview with key metrics:
+- Money Overview with key metrics:
   - Account Balance  
   - Total Income  
   - Total Expenses  
@@ -35,7 +35,7 @@ FinanceHub helps users track their income, expenses, set savings goals, and gain
 - Update Savings amounts dynamically  
 - Goal Completion percentage tracking  
 
-### Financial Summary
+### Money Summary
 - Detailed Reports on income and expenses  
 - Category-wise expense breakdown  
 - Net Balance calculations  
@@ -69,7 +69,7 @@ FinanceHub helps users track their income, expenses, set savings goals, and gain
 ### Backend Setup
 
 git clone <repository-url>
-cd finance-backend
+cd money-backend
 
 ## Authors 
 Stephen Njenga 
