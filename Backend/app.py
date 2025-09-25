@@ -130,6 +130,8 @@ def get_dashboard_data(current_user):
     total_income = sum(t.amount for t in transactions if t.amount > 0)
     total_expenses = abs(sum(t.amount for t in transactions if t.amount < 0))
     cash_flow = total_income - total_expenses
+     
+     
      # Calculate monthly data for chart
     monthly_data = {}
     for t in transactions:
@@ -149,3 +151,9 @@ def get_dashboard_data(current_user):
         "budget": 75,
         "monthlyData": monthly_data
     })
+
+@app.route('/api/goals', methods=['GET'])
+@token_required
+def get_goals(current_user):
+    goals = Goal.query.filter_by(user_id=current_user.id).all()
+    return jsonify([g.to_dict() for g in goals])
