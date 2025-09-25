@@ -4,3 +4,5 @@ import bcrypt
 import jwt
 import os
 from datetime import datetime, timedelta
+
+db = SQLAlchemy()
