@@ -171,3 +171,19 @@ def add_goal(current_user):
     db.session.add(goal)
     db.session.commit()
     return jsonify(goal.to_dict()), 201
+
+@app.route('/api/goals/<int:goal_id>', methods=['PUT'])
+@token_required
+def update_goal(current_user, goal_id):
+    goal = Goal.query.filter_by(id=goal_id, user_id=current_user.id).first_or_404()
+    data = request.get_json()
+    
+    if 'saved' in data:
+        goal.saved = float(data['saved'])
+    if 'target' in data:
+        goal.target = float(data['target'])
+    if 'name' in data:
+        goal.name = data['name']
+    
+    db.session.commit()
+    return jsonify(goal.to_dict())
