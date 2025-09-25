@@ -64,3 +64,12 @@ class Transaction(db.Model):
             'category': self.category,
             'user_id': self.user_id
         }
+
+class Goal(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    saved = db.Column(db.Float, default=0)
+    target = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
