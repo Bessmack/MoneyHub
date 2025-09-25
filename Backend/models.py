@@ -24,3 +24,10 @@ class User(db.Model):
     def check_password(self, password):
         return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
     
+    def generate_token(self):
+        payload = {
+            'user_id': self.id,
+            'exp': datetime.utcnow() + timedelta(days=7)
+        }
+        return jwt.encode(payload, os.getenv('JWT_SECRET', 'fallback-secret'), algorithm='HS256')
+    
