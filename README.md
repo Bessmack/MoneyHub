@@ -24,7 +24,7 @@ MoneyHub helps users track their income, expenses, set savings goals, and gain i
 - Savings Goals progress tracking  
 
 ### Transaction Management
-- Add Transactions (Income/Expense)  
+- Add Transactions (Income/Expense)
 - Categorize transactions (Shopping, Food, Transport, etc.)  
 - Transaction History with filtering capabilities  
 - Real-time balance updates  
