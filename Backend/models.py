@@ -31,7 +31,7 @@ class User(db.Model):
         }
         return jwt.encode(payload, os.getenv('JWT_SECRET', 'fallback-secret'), algorithm='HS256')
     
-     @staticmethod
+    @staticmethod
     def verify_token(token):
         try:
             payload = jwt.decode(token, os.getenv('JWT_SECRET', 'fallback-secret'), algorithms=['HS256'])
@@ -40,7 +40,7 @@ class User(db.Model):
             return None
         
         def to_dict(self):
-        return {
+          return {
             'id': self.id,
             'username': self.username,
             'email': self.email,

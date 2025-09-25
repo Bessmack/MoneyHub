@@ -13,7 +13,7 @@ def token_required(f):
             if auth_header.startswith('Bearer '):
                 token = auth_header.split(' ')[1]
             if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
+                return jsonify({'message': 'Token is missing!'}), 401
         
         try:
             current_user = User.verify_token(token)
