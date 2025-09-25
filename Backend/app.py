@@ -157,3 +157,17 @@ def get_dashboard_data(current_user):
 def get_goals(current_user):
     goals = Goal.query.filter_by(user_id=current_user.id).all()
     return jsonify([g.to_dict() for g in goals])
+
+@app.route('/api/goals', methods=['POST'])
+@token_required
+def add_goal(current_user):
+    data = request.get_json()
+    goal = Goal(
+        name=data['name'],
+        target=float(data['target']),
+        saved=float(data.get('saved', 0)),
+        user_id=current_user.id
+    )
+    db.session.add(goal)
+    db.session.commit()
+    return jsonify(goal.to_dict()), 201
