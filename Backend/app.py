@@ -130,4 +130,22 @@ def get_dashboard_data(current_user):
     total_income = sum(t.amount for t in transactions if t.amount > 0)
     total_expenses = abs(sum(t.amount for t in transactions if t.amount < 0))
     cash_flow = total_income - total_expenses
+     # Calculate monthly data for chart
+    monthly_data = {}
+    for t in transactions:
+        month_key = t.date.strftime('%Y-%m')
+        if month_key not in monthly_data:
+            monthly_data[month_key] = {'income': 0, 'expenses': 0}
+        
+        if t.amount > 0:
+            monthly_data[month_key]['income'] += t.amount
+        else:
+            monthly_data[month_key]['expenses'] += abs(t.amount)
     
+    return jsonify({
+        "cashFlow": cash_flow,
+        "expenses": total_expenses,
+        "totalBalance": total_income - total_expenses,
+        "budget": 75,
+        "monthlyData": monthly_data
+    })
