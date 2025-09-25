@@ -89,3 +89,10 @@ def login():
 @token_required
 def get_current_user(current_user):
     return jsonify({'user': current_user.to_dict()})
+
+# PROTECTED API ROUTES (All routes now require authentication)
+@app.route('/api/transactions', methods=['GET'])
+@token_required
+def get_transactions(current_user):
+    transactions = Transaction.query.filter_by(user_id=current_user.id).order_by(Transaction.date.desc()).all()
+    return jsonify([t.to_dict() for t in transactions])
