@@ -38,3 +38,11 @@ class User(db.Model):
             return User.query.get(payload['user_id'])
         except:
             return None
+        
+        def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'created_at': self.created_at.isoformat()
+        }
