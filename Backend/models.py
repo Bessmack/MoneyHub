@@ -72,4 +72,17 @@ class Goal(db.Model):
     target = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'saved': self.saved,
+            'target': self.target,
+            'progress': (self.saved / self.target) * 100 if self.target > 0 else 0,
+            'user_id': self.user_id
+        }
+
+
+
     
