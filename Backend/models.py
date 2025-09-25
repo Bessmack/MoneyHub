@@ -46,3 +46,12 @@ class User(db.Model):
             'email': self.email,
             'created_at': self.created_at.isoformat()
         }
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    category = db.Column(db.String(50), nullable=False, default='Other')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
