@@ -84,3 +84,8 @@ def login():
         
     except Exception as e:
         return jsonify({'message': str(e)}), 400       
+
+@app.route('/api/auth/me', methods=['GET'])
+@token_required
+def get_current_user(current_user):
+    return jsonify({'user': current_user.to_dict()})
