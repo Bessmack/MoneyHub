@@ -114,3 +114,21 @@ def add_transaction(current_user):
         return jsonify(transaction.to_dict()), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
+@app.route('/api/transactions', methods=['POST'])
+@token_required
+def add_transaction(current_user):
+    try:
+        data = request.get_json()
+        transaction = Transaction(
+            title=data['title'],
+            amount=float(data['amount']),
+            category=data.get('category', 'Other'),
+            date=datetime.fromisoformat(data.get('date', datetime.utcnow().isoformat())),
+            user_id=current_user.id
+        )
+        db.session.add(transaction)
+        db.session.commit()
+        return jsonify(transaction.to_dict()), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
