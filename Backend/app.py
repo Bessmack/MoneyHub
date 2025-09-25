@@ -122,3 +122,12 @@ def delete_transaction(current_user, transaction_id):
     db.session.delete(transaction)
     db.session.commit()
     return jsonify({'message': 'Transaction deleted successfully'})
+@app.route('/api/dashboard')
+@token_required
+def get_dashboard_data(current_user):
+    transactions = Transaction.query.filter_by(user_id=current_user.id).all()
+    
+    total_income = sum(t.amount for t in transactions if t.amount > 0)
+    total_expenses = abs(sum(t.amount for t in transactions if t.amount < 0))
+    cash_flow = total_income - total_expenses
+    
