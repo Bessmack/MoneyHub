@@ -55,3 +55,12 @@ class Transaction(db.Model):
     category = db.Column(db.String(50), nullable=False, default='Other')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'amount': self.amount,
+            'date': self.date.isoformat(),
+            'category': self.category,
+            'user_id': self.user_id
+        }
