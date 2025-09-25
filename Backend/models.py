@@ -31,3 +31,10 @@ class User(db.Model):
         }
         return jwt.encode(payload, os.getenv('JWT_SECRET', 'fallback-secret'), algorithm='HS256')
     
+     @staticmethod
+    def verify_token(token):
+        try:
+            payload = jwt.decode(token, os.getenv('JWT_SECRET', 'fallback-secret'), algorithms=['HS256'])
+            return User.query.get(payload['user_id'])
+        except:
+            return None
