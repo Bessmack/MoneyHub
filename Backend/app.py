@@ -187,3 +187,14 @@ def update_goal(current_user, goal_id):
     
     db.session.commit()
     return jsonify(goal.to_dict())
+
+@app.route('/api/goals/<int:goal_id>', methods=['DELETE'])
+@token_required
+def delete_goal(current_user, goal_id):
+    goal = Goal.query.filter_by(id=goal_id, user_id=current_user.id).first_or_404()
+    db.session.delete(goal)
+    db.session.commit()
+    return jsonify({'message': 'Goal deleted successfully'})
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
