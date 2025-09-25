@@ -24,3 +24,17 @@ def create_tables():
         admin.set_password('admin123')
         db.session.add(admin)
         db.session.commit()
+
+# AUTHENTICATION ROUTES
+@app.route('/api/auth/register', methods=['POST'])
+def register():
+    try:
+        data = request.get_json()
+        
+        # Check if user already exists
+        if User.query.filter_by(username=data['username']).first():
+            return jsonify({'message': 'Username already exists!'}), 400
+        
+        if User.query.filter_by(email=data['email']).first():
+            return jsonify({'message': 'Email already exists!'}), 400
+        
