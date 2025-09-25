@@ -115,20 +115,10 @@ def add_transaction(current_user):
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
-@app.route('/api/transactions', methods=['POST'])
+@app.route('/api/transactions/<int:transaction_id>', methods=['DELETE'])
 @token_required
-def add_transaction(current_user):
-    try:
-        data = request.get_json()
-        transaction = Transaction(
-            title=data['title'],
-            amount=float(data['amount']),
-            category=data.get('category', 'Other'),
-            date=datetime.fromisoformat(data.get('date', datetime.utcnow().isoformat())),
-            user_id=current_user.id
-        )
-        db.session.add(transaction)
-        db.session.commit()
-        return jsonify(transaction.to_dict()), 201
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
+def delete_transaction(current_user, transaction_id):
+    transaction = Transaction.query.filter_by(id=transaction_id, user_id=current_user.id).first_or_404()
+    db.session.delete(transaction)
+    db.session.commit()
+    return jsonify({'message': 'Transaction deleted successfully'})
