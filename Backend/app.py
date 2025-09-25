@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from models import db, User, Transaction, Goal
 from auth import token_required
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 app = Flask(__name__)
@@ -123,35 +123,6 @@ def delete_transaction(current_user, transaction_id):
     db.session.commit()
     return jsonify({'message': 'Transaction deleted successfully'})
 
-@app.route('/api/dashboard')
-@token_required
-def get_dashboard_data(current_user):
-    transactions = Transaction.query.filter_by(user_id=current_user.id).all()
-    
-    total_income = sum(t.amount for t in transactions if t.amount > 0)
-    total_expenses = abs(sum(t.amount for t in transactions if t.amount < 0))
-    cash_flow = total_income - total_expenses
-    
-    # Calculate monthly data for chart
-    monthly_data = {}
-    for t in transactions:
-        month_key = t.date.strftime('%Y-%m')
-        if month_key not in monthly_data:
-            monthly_data[month_key] = {'income': 0, 'expenses': 0}
-        
-        if t.amount > 0:
-            monthly_data[month_key]['income'] += t.amount
-        else:
-            monthly_data[month_key]['expenses'] += abs(t.amount)
-    
-    return jsonify({
-        "cashFlow": cash_flow,
-        "expenses": total_expenses,
-        "totalBalance": total_income - total_expenses,
-        "budget": 75,
-        "monthlyData": monthly_data
-    })
-
 @app.route('/api/goals', methods=['GET'])
 @token_required
 def get_goals(current_user):
@@ -195,6 +166,89 @@ def delete_goal(current_user, goal_id):
     db.session.delete(goal)
     db.session.commit()
     return jsonify({'message': 'Goal deleted successfully'})
+
+# ENHANCED DASHBOARD WITH CHARTS DATA
+@app.route('/api/dashboard')
+@token_required
+def get_dashboard_data(current_user):
+    transactions = Transaction.query.filter_by(user_id=current_user.id).all()
+    
+    # Basic calculations
+    total_income = sum(t.amount for t in transactions if t.amount > 0)
+    total_expenses = abs(sum(t.amount for t in transactions if t.amount < 0))
+    cash_flow = total_income - total_expenses
+    
+    # Monthly data for line chart
+    monthly_data = {}
+    for t in transactions:
+        month_key = t.date.strftime('%Y-%m')
+        if month_key not in monthly_data:
+            monthly_data[month_key] = {'income': 0, 'expenses': 0, 'balance': 0}
+        
+        if t.amount > 0:
+            monthly_data[month_key]['income'] += t.amount
+        else:
+            monthly_data[month_key]['expenses'] += abs(t.amount)
+        monthly_data[month_key]['balance'] += t.amount
+    
+    # Sort months chronologically
+    sorted_months = sorted(monthly_data.keys())
+    
+    # Category data for doughnut chart
+    category_data = {}
+    for t in transactions:
+        if t.amount < 0:  # Only expenses for category breakdown
+            category = t.category
+            if category not in category_data:
+                category_data[category] = 0
+            category_data[category] += abs(t.amount)
+    
+    # Weekly data for bar chart (last 8 weeks)
+    weekly_data = {}
+    today = datetime.utcnow()
+    
+    # Create empty weekly slots for last 8 weeks
+    for i in range(8):
+        week_start = today - timedelta(weeks=(7-i))
+        week_key = week_start.strftime('%Y-W%U')  # Format: 2024-W35
+        weekly_data[week_key] = {'income': 0, 'expenses': 0}
+    
+    # Fill weekly data with transactions from last 8 weeks
+    eight_weeks_ago = today - timedelta(weeks=8)
+    recent_transactions = [t for t in transactions if t.date >= eight_weeks_ago]
+    
+    for t in recent_transactions:
+        week_key = t.date.strftime('%Y-W%U')
+        if week_key in weekly_data:
+            if t.amount > 0:
+                weekly_data[week_key]['income'] += t.amount
+            else:
+                weekly_data[week_key]['expenses'] += abs(t.amount)
+    
+    # Sort weekly keys chronologically
+    sorted_weeks = sorted(weekly_data.keys())
+    
+    return jsonify({
+        "summary": {
+            "cashFlow": cash_flow,
+            "expenses": total_expenses,
+            "totalBalance": total_income - total_expenses,
+            "budget": 75
+        },
+        "monthlyData": {
+            "labels": sorted_months,
+            "income": [monthly_data[month]['income'] for month in sorted_months],
+            "expenses": [monthly_data[month]['expenses'] for month in sorted_months],
+            "balance": [monthly_data[month]['balance'] for month in sorted_months]
+        },
+        "categoryData": category_data,
+        "weeklyData": {
+            "labels": sorted_weeks,
+            "income": [weekly_data[week]['income'] for week in sorted_weeks],
+            "expenses": [weekly_data[week]['expenses'] for week in sorted_weeks]
+        },
+        "recentTransactions": [t.to_dict() for t in transactions[-5:]]  # Last 5 transactions
+    })
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
