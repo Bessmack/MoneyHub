@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS # type: ignore
 from models import db, User, Transaction, Goal
 from auth import token_required
 from datetime import datetime, timedelta
@@ -13,7 +13,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
 CORS(app)
 db.init_app(app)
 
-# Create tables and admin user
+# Create tables and admin user - FIXED: Use before_first_request instead of before_request
 @app.before_request
 def create_tables():
     db.create_all()

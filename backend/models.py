@@ -77,7 +77,7 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
-            'created_at': self.created_at.isoformat()
+            'created_at': self.created_at.isoformat() if self.created_at else None  # FIXED: Added isoformat() and null check
         }
 
 
@@ -94,7 +94,7 @@ class Transaction(db.Model):
             'id': self.id,
             'title': self.title,
             'amount': self.amount,
-            'date': self.date.isoformat(),
+            'date': self.date.isoformat() if self.date else None,  # FIXED: Added null check
             'category': self.category,
             'user_id': self.user_id
         }
@@ -114,5 +114,6 @@ class Goal(db.Model):
             'saved': self.saved,
             'target': self.target,
             'progress': (self.saved / self.target) * 100 if self.target > 0 else 0,
+            'created_at': self.created_at.isoformat() if self.created_at else None,  # FIXED: Added this missing field with isoformat()
             'user_id': self.user_id
         }
