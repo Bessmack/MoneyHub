@@ -60,4 +60,27 @@ def register():
     except Exception as e:
         return jsonify({'message': str(e)}), 400
 
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    try:
+        data = request.get_json()
         
+        # Find user by username or email
+        user = User.query.filter(
+            (User.username == data['username']) | (User.email == data['username'])
+        ).first()
+        
+        if not user or not user.check_password(data['password']):
+            return jsonify({'message': 'Invalid credentials!'}), 401
+        
+        # Generate token
+        token = user.generate_token()
+        
+        return jsonify({
+            'message': 'Login successful!',
+            'token': token,
+            'user': user.to_dict()
+        })
+        
+    except Exception as e:
+        return jsonify({'message': str(e)}), 400       
