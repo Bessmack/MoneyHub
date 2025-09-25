@@ -47,4 +47,17 @@ def register():
         
         db.session.add(user)
         db.session.commit()
+
+        # Generate token
+        token = user.generate_token()
+        
+        return jsonify({
+            'message': 'User created successfully!',
+            'token': token,
+            'user': user.to_dict()
+        }), 201
+        
+    except Exception as e:
+        return jsonify({'message': str(e)}), 400
+
         
