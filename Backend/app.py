@@ -12,3 +12,15 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
 
 CORS(app)
 db.init_app(app)
+
+ Create tables and admin user
+@app.before_request
+def create_tables():
+    db.create_all()
+    
+    # Create admin user if not exists
+    if not User.query.filter_by(username='admin').first():
+        admin = User(username='admin', email='admin@moneyhub.com')
+        admin.set_password('admin123')
+        db.session.add(admin)
+        db.session.commit()
