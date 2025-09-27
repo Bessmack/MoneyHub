@@ -18,21 +18,24 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const response = await axios.get('/api/dashboard');
-      setDashboardData(response.data);
-      setLoading(false);
+      setDashboardData(response.data || {});
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+    } finally {
       setLoading(false);
     }
   };
 
+  // Safe access helpers
+  const safeNumber = (val) => (typeof val === 'number' && !isNaN(val) ? val : 0);
+
   // Prepare chart data
   const monthlyChartData = {
-    labels: dashboardData.monthlyData?.labels || [],
+    labels: dashboardData?.monthlyData?.labels || [],
     datasets: [
       {
         label: 'Income',
-        data: dashboardData.monthlyData?.income || [],
+        data: dashboardData?.monthlyData?.income || [],
         borderColor: 'rgb(75, 192, 192)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         fill: true,
@@ -40,7 +43,7 @@ const Dashboard = () => {
       },
       {
         label: 'Expenses',
-        data: dashboardData.monthlyData?.expenses || [],
+        data: dashboardData?.monthlyData?.expenses || [],
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         fill: true,
@@ -50,29 +53,39 @@ const Dashboard = () => {
   };
 
   const weeklyChartData = {
-    labels: dashboardData.weeklyData?.labels?.map(label => `Week ${label.split('-')[1]}`) || [],
+    labels:
+      dashboardData?.weeklyData?.labels?.map((label) => {
+        const parts = String(label).split('-');
+        return parts[1] ? `Week ${parts[1]}` : label;
+      }) || [],
     datasets: [
       {
         label: 'Income',
-        data: dashboardData.weeklyData?.income || [],
+        data: dashboardData?.weeklyData?.income || [],
         backgroundColor: 'rgba(75, 192, 192, 0.8)',
       },
       {
         label: 'Expenses',
-        data: dashboardData.weeklyData?.expenses || [],
+        data: dashboardData?.weeklyData?.expenses || [],
         backgroundColor: 'rgba(255, 99, 132, 0.8)',
       },
     ],
   };
 
   const categoryChartData = {
-    labels: Object.keys(dashboardData.categoryData || {}),
+    labels: Object.keys(dashboardData?.categoryData || {}),
     datasets: [
       {
-        data: Object.values(dashboardData.categoryData || {}),
+        data: Object.values(dashboardData?.categoryData || {}),
         backgroundColor: [
-          '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
-          '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#4BC0C0',
+          '#9966FF',
+          '#FF9F40',
+          '#FF6384',
+          '#C9CBCF',
         ],
         borderWidth: 2,
         borderColor: '#fff',
@@ -84,34 +97,41 @@ const Dashboard = () => {
     return <div className="dashboard-loading">Loading financial data...</div>;
   }
 
+  const summary = dashboardData?.summary || {};
+  const recentTransactions = dashboardData?.recentTransactions || [];
+
+  const totalBalance = safeNumber(summary.totalBalance);
+  const cashFlow = safeNumber(summary.cashFlow);
+  const expenses = safeNumber(summary.expenses);
+  const budget = safeNumber(summary.budget); // expected percentage 0–100
+
+  const totalIncome = totalBalance + expenses;
+  const savingsRate =
+    totalIncome > 0 ? Math.round((totalBalance / totalIncome) * 100) : 0;
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
         <h1>Financial Dashboard</h1>
         <p>Welcome back! Here's your financial overview.</p>
       </div>
-      
+
       {/* Summary Cards */}
       <div className="summary-grid">
-        <SummaryCard 
-          title="Total Balance" 
-          amount={dashboardData.summary?.totalBalance || 0} 
-          trend={dashboardData.summary?.totalBalance >= 0 ? 'up' : 'down'}
+        <SummaryCard
+          title="Total Balance"
+          amount={totalBalance}
+          trend={totalBalance >= 0 ? 'up' : 'down'}
         />
-        <SummaryCard 
-          title="Cash Flow" 
-          amount={dashboardData.summary?.cashFlow || 0} 
-          trend={dashboardData.summary?.cashFlow >= 0 ? 'up' : 'down'}
+        <SummaryCard
+          title="Cash Flow"
+          amount={cashFlow}
+          trend={cashFlow >= 0 ? 'up' : 'down'}
         />
-        <SummaryCard 
-          title="Expenses" 
-          amount={dashboardData.summary?.expenses || 0}
-          subtitle="This month"
-        />
-        <SummaryCard 
-          title="Budget Usage" 
-          amount={`${dashboardData.summary?.budget || 0}%`}
-          subtitle="Monthly budget"
+        <SummaryCard
+          title="Expenses"
+          amount={expenses}
+          trend='down'
         />
       </div>
 
@@ -120,19 +140,19 @@ const Dashboard = () => {
         <div className="chart-header">
           <h2>Financial Analytics</h2>
           <div className="chart-tabs">
-            <button 
+            <button
               className={activeChart === 'monthly' ? 'active' : ''}
               onClick={() => setActiveChart('monthly')}
             >
               Monthly Trend
             </button>
-            <button 
+            <button
               className={activeChart === 'weekly' ? 'active' : ''}
               onClick={() => setActiveChart('weekly')}
             >
               Weekly Overview
             </button>
-            <button 
+            <button
               className={activeChart === 'categories' ? 'active' : ''}
               onClick={() => setActiveChart('categories')}
             >
@@ -143,22 +163,13 @@ const Dashboard = () => {
 
         <div className="chart-container">
           {activeChart === 'monthly' && (
-            <LineChart 
-              data={monthlyChartData} 
-              title="Income vs Expenses Trend" 
-            />
+            <LineChart data={monthlyChartData} title="Income vs Expenses Trend" />
           )}
           {activeChart === 'weekly' && (
-            <BarChart 
-              data={weeklyChartData} 
-              title="Weekly Income & Expenses" 
-            />
+            <BarChart data={weeklyChartData} title="Weekly Income & Expenses" />
           )}
           {activeChart === 'categories' && (
-            <DoughnutChart 
-              data={categoryChartData} 
-              title="Expense Categories" 
-            />
+            <DoughnutChart data={categoryChartData} title="Expense Categories" />
           )}
         </div>
       </div>
@@ -168,20 +179,28 @@ const Dashboard = () => {
         <div className="recent-transactions">
           <h3>Recent Transactions</h3>
           <div className="transactions-list">
-            {dashboardData.recentTransactions?.map(transaction => (
-              <div key={transaction.id} className="recent-transaction-item">
-                <div className="transaction-info">
-                  <span className="transaction-title">{transaction.title}</span>
-                  <span className="transaction-date">
-                    {new Date(transaction.date).toLocaleDateString()}
+            {recentTransactions.length > 0 ? (
+              recentTransactions.map((transaction) => (
+                <div key={transaction.id || Math.random()} className="recent-transaction-item">
+                  <div className="transaction-info">
+                    <span className="transaction-title">{transaction.title || 'Untitled'}</span>
+                    <span className="transaction-date">
+                      {transaction.date
+                        ? new Date(transaction.date).toLocaleDateString()
+                        : 'Unknown Date'}
+                    </span>
+                  </div>
+                  <span
+                    className={`transaction-amount ${
+                      transaction.amount > 0 ? 'positive' : 'negative'
+                    }`}
+                  >
+                    {transaction.amount > 0 ? '+' : ''}
+                    ${safeNumber(transaction.amount).toLocaleString()}
                   </span>
                 </div>
-                <span className={`transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}`}>
-                  {transaction.amount > 0 ? '+' : ''}${Math.abs(transaction.amount).toLocaleString()}
-                </span>
-              </div>
-            ))}
-            {(!dashboardData.recentTransactions || dashboardData.recentTransactions.length === 0) && (
+              ))
+            ) : (
               <p className="no-data">No transactions yet</p>
             )}
           </div>
@@ -192,28 +211,19 @@ const Dashboard = () => {
           <div className="stats-grid">
             <div className="stat-item">
               <span className="stat-label">Total Income</span>
-              <span className="stat-value positive">
-                ${((dashboardData.summary?.totalBalance || 0) + (dashboardData.summary?.expenses || 0)).toLocaleString()}
-              </span>
+              <span className="stat-value positive">${totalIncome.toLocaleString()}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Total Expenses</span>
-              <span className="stat-value negative">
-                ${(dashboardData.summary?.expenses || 0).toLocaleString()}
-              </span>
+              <span className="stat-value negative">${expenses.toLocaleString()}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Transactions</span>
-              <span className="stat-value">
-                {dashboardData.recentTransactions?.length || 0}
-              </span>
+              <span className="stat-value">{recentTransactions.length}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Savings Rate</span>
-              <span className="stat-value">
-                {dashboardData.summary?.totalBalance > 0 ? 
-                 Math.round((dashboardData.summary.totalBalance / ((dashboardData.summary.totalBalance + dashboardData.summary.expenses)) * 100)) : 0}%
-              </span>
+              <span className="stat-value">{savingsRate}%</span>
             </div>
           </div>
         </div>

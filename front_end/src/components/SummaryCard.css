@@ -5,10 +5,10 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   margin: 0.5rem;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-left: 4px solid #3498db;
 }
 
 .summary-card:hover {
+  border-left: 3px solid #3498db;
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
