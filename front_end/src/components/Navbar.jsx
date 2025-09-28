@@ -171,9 +171,6 @@ const Navbar = () => {
                     <span className="mobile-user-email">Personal Account</span>
                   </div>
                 </div>
-                <button className="close-menu" onClick={closeMenu}>
-                  ✕
-                </button>
               </div>
 
               <ul className="mobile-nav-links">
