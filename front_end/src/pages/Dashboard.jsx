@@ -10,9 +10,19 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState({});
   const [loading, setLoading] = useState(true);
   const [activeChart, setActiveChart] = useState('monthly'); // monthly, weekly, categories
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showRecentTransactions, setShowRecentTransactions] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
+    
+    // Handle window resize
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const fetchDashboardData = async () => {
@@ -94,7 +104,12 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return <div className="dashboard-loading">Loading financial data...</div>;
+    return (
+      <div className="dashboard-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading financial data...</p>
+      </div>
+    );
   }
 
   const summary = dashboardData?.summary || {};
@@ -103,7 +118,7 @@ const Dashboard = () => {
   const totalBalance = safeNumber(summary.totalBalance);
   const cashFlow = safeNumber(summary.cashFlow);
   const expenses = safeNumber(summary.expenses);
-  const budget = safeNumber(summary.budget); // expected percentage 0–100
+  const budget = safeNumber(summary.budget);
 
   const totalIncome = totalBalance + expenses;
   const savingsRate =
@@ -133,6 +148,14 @@ const Dashboard = () => {
           amount={expenses}
           trend='down'
         />
+        {/* Additional card for mobile to show savings rate */}
+        {isMobile && (
+          <SummaryCard
+            title="Savings Rate"
+            amount={`${savingsRate}%`}
+            trend={savingsRate > 20 ? 'up' : 'down'}
+          />
+        )}
       </div>
 
       {/* Chart Section */}
@@ -141,22 +164,22 @@ const Dashboard = () => {
           <h2>Financial Analytics</h2>
           <div className="chart-tabs">
             <button
-              className={activeChart === 'monthly' ? 'active' : ''}
+              className={`chart-tab ${activeChart === 'monthly' ? 'active' : ''}`}
               onClick={() => setActiveChart('monthly')}
             >
-              Monthly Trend
+              {isMobile ? 'Monthly' : 'Monthly Trend'}
             </button>
             <button
-              className={activeChart === 'weekly' ? 'active' : ''}
+              className={`chart-tab ${activeChart === 'weekly' ? 'active' : ''}`}
               onClick={() => setActiveChart('weekly')}
             >
-              Weekly Overview
+              {isMobile ? 'Weekly' : 'Weekly Overview'}
             </button>
             <button
-              className={activeChart === 'categories' ? 'active' : ''}
+              className={`chart-tab ${activeChart === 'categories' ? 'active' : ''}`}
               onClick={() => setActiveChart('categories')}
             >
-              Expense Categories
+              {isMobile ? 'Categories' : 'Expense Categories'}
             </button>
           </div>
         </div>
@@ -174,60 +197,135 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Recent Transactions & Quick Stats */}
-      <div className="dashboard-bottom">
-        <div className="recent-transactions">
-          <h3>Recent Transactions</h3>
-          <div className="transactions-list">
-            {recentTransactions.length > 0 ? (
-              recentTransactions.map((transaction) => (
-                <div key={transaction.id || Math.random()} className="recent-transaction-item">
-                  <div className="transaction-info">
-                    <span className="transaction-title">{transaction.title || 'Untitled'}</span>
-                    <span className="transaction-date">
-                      {transaction.date
-                        ? new Date(transaction.date).toLocaleDateString()
-                        : 'Unknown Date'}
-                    </span>
-                  </div>
-                  <span
-                    className={`transaction-amount ${
-                      transaction.amount > 0 ? 'positive' : 'negative'
-                    }`}
-                  >
-                    {transaction.amount > 0 ? '+' : ''}
-                    ${safeNumber(transaction.amount).toLocaleString()}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="no-data">No transactions yet</p>
+      {/* Mobile-optimized bottom section */}
+      {isMobile ? (
+        <div className="dashboard-mobile-bottom">
+          {/* Quick Stats Card */}
+          <div className="mobile-stats-card">
+            <h3>Quick Stats</h3>
+            <div className="mobile-stats-grid">
+              <div className="mobile-stat-item">
+                <span className="mobile-stat-value positive">${totalIncome.toLocaleString()}</span>
+                <span className="mobile-stat-label">Total Income</span>
+              </div>
+              <div className="mobile-stat-item">
+                <span className="mobile-stat-value negative">${expenses.toLocaleString()}</span>
+                <span className="mobile-stat-label">Total Expenses</span>
+              </div>
+              <div className="mobile-stat-item">
+                <span className="mobile-stat-value">{recentTransactions.length}</span>
+                <span className="mobile-stat-label">Transactions</span>
+              </div>
+              <div className="mobile-stat-item">
+                <span className="mobile-stat-value">{savingsRate}%</span>
+                <span className="mobile-stat-label">Savings Rate</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Collapsible Recent Transactions */}
+          <div className="mobile-transactions-card">
+            <div 
+              className="mobile-transactions-header"
+              onClick={() => setShowRecentTransactions(!showRecentTransactions)}
+            >
+              <h3>Recent Transactions</h3>
+              <span className="mobile-toggle-icon">
+                {showRecentTransactions ? '▲' : '▼'}
+              </span>
+            </div>
+            
+            {showRecentTransactions && (
+              <div className="mobile-transactions-list">
+                {recentTransactions.length > 0 ? (
+                  recentTransactions.slice(0, 5).map((transaction) => (
+                    <div key={transaction.id || Math.random()} className="mobile-transaction-item">
+                      <div className="mobile-transaction-info">
+                        <span className="mobile-transaction-title">
+                          {transaction.title || 'Untitled'}
+                        </span>
+                        <span className="mobile-transaction-date">
+                          {transaction.date
+                            ? new Date(transaction.date).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric'
+                              })
+                            : 'Unknown'}
+                        </span>
+                      </div>
+                      <span
+                        className={`mobile-transaction-amount ${
+                          transaction.amount > 0 ? 'positive' : 'negative'
+                        }`}
+                      >
+                        {transaction.amount > 0 ? '+' : ''}
+                        ${safeNumber(transaction.amount).toLocaleString()}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="mobile-no-data">No transactions yet</p>
+                )}
+              </div>
             )}
           </div>
         </div>
+      ) : (
+        /* Desktop layout */
+        <div className="dashboard-bottom">
+          <div className="recent-transactions">
+            <h3>Recent Transactions</h3>
+            <div className="transactions-list">
+              {recentTransactions.length > 0 ? (
+                recentTransactions.map((transaction) => (
+                  <div key={transaction.id || Math.random()} className="recent-transaction-item">
+                    <div className="transaction-info">
+                      <span className="transaction-title">{transaction.title || 'Untitled'}</span>
+                      <span className="transaction-date">
+                        {transaction.date
+                          ? new Date(transaction.date).toLocaleDateString()
+                          : 'Unknown Date'}
+                      </span>
+                    </div>
+                    <span
+                      className={`transaction-amount ${
+                        transaction.amount > 0 ? 'positive' : 'negative'
+                      }`}
+                    >
+                      {transaction.amount > 0 ? '+' : ''}
+                      ${safeNumber(transaction.amount).toLocaleString()}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="no-data">No transactions yet</p>
+              )}
+            </div>
+          </div>
 
-        <div className="quick-stats">
-          <h3>Quick Stats</h3>
-          <div className="stats-grid">
-            <div className="stat-item">
-              <span className="stat-label">Total Income</span>
-              <span className="stat-value positive">${totalIncome.toLocaleString()}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Total Expenses</span>
-              <span className="stat-value negative">${expenses.toLocaleString()}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Transactions</span>
-              <span className="stat-value">{recentTransactions.length}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Savings Rate</span>
-              <span className="stat-value">{savingsRate}%</span>
+          <div className="quick-stats">
+            <h3>Quick Stats</h3>
+            <div className="stats-grid">
+              <div className="stat-item">
+                <span className="stat-label">Total Income</span>
+                <span className="stat-value positive">${totalIncome.toLocaleString()}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Total Expenses</span>
+                <span className="stat-value negative">${expenses.toLocaleString()}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Transactions</span>
+                <span className="stat-value">{recentTransactions.length}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Savings Rate</span>
+                <span className="stat-value">{savingsRate}%</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
