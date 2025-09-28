@@ -314,8 +314,7 @@ const Goals = () => {
           <div className="motivation-content">
             <h3>🎉 Congratulations!</h3>
             <p>
-              You've completed <strong>{completedGoals}</strong> goal{completedGoals !== 1 ? 's' : ''} 
-              and saved a total of <strong>${totalSaved.toLocaleString()}</strong>!
+              You've completed <strong>{completedGoals}</strong> goal{completedGoals !== 1 ? 's' : ''} and saved a total of <strong>${totalSaved.toLocaleString()}</strong>!
             </p>
             {overallProgress >= 75 && (
               <p className="motivation-message">
