@@ -13,8 +13,6 @@ services:
   frontend:
     build: ./front_end
     container_name: react-frontend
-    ports:
-      - 3000:80
     env_file:
       - front_end/.env
     networks:
