@@ -62,7 +62,7 @@ const LoginPage = () => {
             <div className="brand-header">
               <div className="brand-logo">💰</div>
               <h1>MoneyHub</h1>
-              <p className="brand-tagline">Your Personal Finance Command Center</p>
+              <p className="brand-tagline">Whether you want to scale your businesses or just learning how to save, MoneyHub is where you belong. Join the world’s most widely adopted money tracking and saving platform that redefines what’s possible.😜</p>
             </div>
 
             <div className="features-grid">
