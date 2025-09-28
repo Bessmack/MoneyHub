@@ -146,18 +146,8 @@ const LoginPage = () => {
 
               {/* Quick Stats */}
               <div className="quick-stats">
-                <div className="stat">
-                  <span className="stat-number">10k+</span>
-                  <span className="stat-label">Users</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-number">$50M+</span>
-                  <span className="stat-label">Tracked</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-number">4.9★</span>
-                  <span className="stat-label">Rating</span>
-                </div>
+                <h3>Copyright: </h3>
+                <p>[Stephen, Ali, Chumo]</p>
               </div>
             </div>
           </div>

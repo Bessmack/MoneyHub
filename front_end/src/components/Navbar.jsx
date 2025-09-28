@@ -74,7 +74,7 @@ const Navbar = () => {
           <div className="nav-content">
             <div className="nav-brand">
               <div className="brand-logo">
-                <span className="logo-icon">💰</span>
+                <span className="logo-icon">💱</span>
                 <h2>MoneyHub</h2>
               </div>
               {user && (
@@ -118,10 +118,6 @@ const Navbar = () => {
                 </span>
                 <span>{isLoggingOut ? 'Signing out...' : 'Logout'}</span>
               </button>
-              <div className="footer-info">
-                <p>Built with ❤️</p>
-                <p>Flask + React</p>
-              </div>
             </div>
           </div>
         </nav>
@@ -133,7 +129,7 @@ const Navbar = () => {
           <nav className="navbar mobile">
             <div className="mobile-nav-content">
               <div className="mobile-brand">
-                <span className="mobile-logo">💰</span>
+                <span className="mobile-logo">💱</span>
                 <h2>MoneyHub</h2>
               </div>
               
@@ -203,9 +199,6 @@ const Navbar = () => {
                   <span>{isLoggingOut ? 'Signing out...' : 'Logout'}</span>
                 </button>
                 
-                <div className="mobile-footer-info">
-                  <p>Built with ❤️ using Flask + React</p>
-                </div>
               </div>
             </div>
           </div>
