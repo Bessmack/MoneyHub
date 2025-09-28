@@ -16,7 +16,7 @@ const Transactions = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/transactions');
+      const response = await axios.get('/api/transactions');
       setTransactions(response.data);
       setLoading(false);
     } catch (error) {
@@ -28,7 +28,7 @@ const Transactions = () => {
   const handleDeleteTransaction = async (transactionId) => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/transactions/${transactionId}`);
+        await axios.delete(`/api/transactions/${transactionId}`);
         setTransactions(transactions.filter(t => t.id !== transactionId));
       } catch (error) {
         console.error('Error deleting transaction:', error);

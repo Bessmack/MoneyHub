@@ -15,7 +15,7 @@ const Goals = () => {
 
   const fetchGoals = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/goals');
+      const response = await axios.get('/api/goals');
       setGoals(response.data);
       setLoading(false);
     } catch (error) {
@@ -31,7 +31,7 @@ const Goals = () => {
 
   const handleUpdateGoal = async (goalId, updatedData) => {
     try {
-      const response = await axios.put(`http://localhost:5000/api/goals/${goalId}`, updatedData);
+      const response = await axios.put(`/api/goals/${goalId}`, updatedData);
       setGoals(goals.map(goal => goal.id === goalId ? response.data : goal));
     } catch (error) {
       console.error('Error updating goal:', error);
@@ -42,7 +42,7 @@ const Goals = () => {
   const handleDeleteGoal = async (goalId) => {
     if (window.confirm('Are you sure you want to delete this goal?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/goals/${goalId}`);
+        await axios.delete(`/api/goals/${goalId}`);
         setGoals(goals.filter(goal => goal.id !== goalId));
       } catch (error) {
         console.error('Error deleting goal:', error);

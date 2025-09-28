@@ -12,7 +12,7 @@ const GoalForm = ({ onGoalAdded, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/goals', {
+      const response = await axios.post('/api/goals', {
         ...formData,
         target: parseFloat(formData.target),
         saved: parseFloat(formData.saved)

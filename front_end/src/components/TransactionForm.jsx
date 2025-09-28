@@ -15,7 +15,7 @@ const TransactionForm = ({ onTransactionAdded, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/transactions', {
+      const response = await axios.post('/api/transactions', {
         ...formData,
         amount: parseFloat(formData.amount)
       });

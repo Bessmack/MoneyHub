@@ -1,0 +1,32 @@
+services:
+  backend:
+    build: ./backend
+    container_name: flask-backend
+    volumes:
+      - ./backend:/app
+      # - ./data/sqlite:/app
+    env_file:
+      - backend/.env
+    networks:
+      - fbnetwork
+
+  frontend:
+    build: ./front_end
+    container_name: react-frontend
+    env_file:
+      - front_end/.env
+    networks:
+      - fbnetwork
+      - proxy
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+    # external: true
+
+networks:
+  proxy:
+    external: true
+  fbnetwork:
+    driver: bridge
