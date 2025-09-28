@@ -116,22 +116,22 @@
 }
 
 .stat-card.primary {
-  --card-color: #3498db;
+  --card-color: #ffffff;
   background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(52, 152, 219, 0.05));
 }
 
 .stat-card.secondary {
-  --card-color: #9b59b6;
+  --card-color: #ffffff;
   background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(155, 89, 182, 0.05));
 }
 
 .stat-card.success {
-  --card-color: #27ae60;
+  --card-color: #ffffff;
   background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(39, 174, 96, 0.05));
 }
 
 .stat-card.info {
-  --card-color: #f39c12;
+  --card-color: #ffffff;
   background: linear-gradient(135deg, rgba(243, 156, 18, 0.1), rgba(243, 156, 18, 0.05));
 }
 
@@ -190,7 +190,7 @@
 
 .progress-percentage {
   font-weight: 700;
-  color: #27ae60;
+  color: #2773ae;
   font-size: 1.3rem;
 }
 
