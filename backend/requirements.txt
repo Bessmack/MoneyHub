@@ -22,7 +22,6 @@ MarkupSafe==3.0.2
 packaging==25.0
 pycparser==2.23
 Pygments==2.19.2
-pyJMT==0.1.4
 PyJWT==2.8.0
 python-dotenv==1.1.1
 requests==2.32.5
