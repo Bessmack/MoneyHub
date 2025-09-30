@@ -52,10 +52,10 @@ MoneyHub helps users track their income, expenses, set savings goals, and gain i
 
 ### Backend
 - Flask - Python web framework  
-- SQLite - Lightweight database  
-- Flask-JWT-Extended - Secure authentication  
-- Flask-Bcrypt - Password hashing  
-- Flask-CORS - Cross-origin resource sharing  
+- SQLite - Lightweight database.
+- Flask-JWT-Extended - Secure authentication.
+- Flask-Bcrypt - Password hashing.
+- Flask-CORS - Cross-origin resource sharing. 
 
 ---
 
